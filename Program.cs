@@ -1,12 +1,27 @@
 
-using System.Text.Json.Serialization;
+
+
+using FileMonitor.Core.Actions;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-});
+//builder.Services.ConfigureHttpJsonOptions(options =>
+//{
+//    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+//});
+
+// Ajout du pipeline d'actions
+builder.Services.AddSingleton<FileActionPipeline>();
+builder.Services.AddTransient<IFileAction, LogFileAction>();
+builder.Services.AddTransient<IFileAction, TransformFileAction>();
+
+//ajout de l'abstration des monitors
+//builder.Services.AddSingleton<IMonitorFactory, MonitorFactory>();
+//builder.Services.AddScoped<LocalMonitor>();
+//builder.Services.AddScoped<SmbMonitor>();
+//builder.Services.AddScoped<SftpMonitor>();
+
+//ajout de l'abstration des handlers de fichiers
 builder.Services.AddSingleton<FileSystemHandlerFactory>();
 builder.Services.AddScoped<LocalFileSystemHandler>();
 builder.Services.AddScoped<SmbFileSystemHandler>();
@@ -21,27 +36,8 @@ builder.Services.AddScoped<LocalFolderDescriptor>();
 
 var app = builder.Build();
 
-var sampleTodos = new Todo[] {
-    new(1, "Walk the dog"),
-    new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-    new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-    new(4, "Clean the bathroom"),
-    new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-};
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", () => sampleTodos);
-todosApi.MapGet("/{id}", (int id) =>
-    sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-        ? Results.Ok(todo)
-        : Results.NotFound());
 
 app.Run();
 
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 
-[JsonSerializable(typeof(Todo[]))]
-internal partial class AppJsonSerializerContext : JsonSerializerContext
-{
-
-}

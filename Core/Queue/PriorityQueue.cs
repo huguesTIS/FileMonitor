@@ -2,15 +2,17 @@
 
 public class PriorityQueue<T>
 {
-    private readonly SortedDictionary<int, Queue<T>> _queues = new();
+    private readonly SortedDictionary<int, Queue<T>> _queues = [];
 
     public void Enqueue(T item, int priority)
     {
-        if (!_queues.ContainsKey(priority))
+        if (!_queues.TryGetValue(priority, out Queue<T>? value))
         {
-            _queues[priority] = new Queue<T>();
+            value = new Queue<T>();
+            _queues[priority] = value;
         }
-        _queues[priority].Enqueue(item);
+
+        value.Enqueue(item);
     }
 
     public T? Dequeue()

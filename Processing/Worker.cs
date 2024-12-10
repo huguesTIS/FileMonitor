@@ -1,8 +1,4 @@
-﻿
-
-
-
-namespace FileMonitor.Processing;
+﻿namespace FileMonitor.Processing;
 
 public class Worker
 {
