@@ -1,3 +1,4 @@
+
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -6,6 +7,17 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
+builder.Services.AddSingleton<FileSystemHandlerFactory>();
+builder.Services.AddScoped<LocalFileSystemHandler>();
+builder.Services.AddScoped<SmbFileSystemHandler>();
+builder.Services.AddScoped<SftpFileSystemHandler>();
+
+// Ajout des services spécifiques nécessaires pour chaque handler
+builder.Services.AddScoped<IImpersonationService, ImpersonationService>();
+builder.Services.AddScoped<SftpFolderDescriptor>();
+builder.Services.AddScoped<SmbFolderDescriptor>(); 
+builder.Services.AddScoped<LocalFolderDescriptor>();
+
 
 var app = builder.Build();
 

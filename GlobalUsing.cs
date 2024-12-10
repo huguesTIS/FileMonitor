@@ -1,1 +1,13 @@
-﻿
+﻿global using FileMonitor.Core.Models;
+global using FileMonitor.Core.Interfaces;
+global using FileMonitor.Core.Handlers;
+global using FileMonitor.Core.Queue;
+global using FileMonitor.Infrastructure.Factory;
+global using FileMonitor.Infrastructure.Security;
+global using System.Runtime.CompilerServices;
+global using Renci.SshNet;
+global using System.Net;
+global using System.Security.Principal;
+global using System.Runtime.InteropServices;
+global using System.Security;
+global using System.Collections.Concurrent;
