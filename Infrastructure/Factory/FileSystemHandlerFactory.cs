@@ -1,6 +1,6 @@
 ﻿namespace FileMonitor.Infrastructure.Factory;
 
-public class FileSystemHandlerFactory
+public class FileSystemHandlerFactory : IFileSystemHandlerFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<string, IFileSystemHandler> _handlerCache = new();
@@ -10,14 +10,14 @@ public class FileSystemHandlerFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IFileSystemHandler CreateHandler(object descriptor)
+    public IFileSystemHandler GetHandler(FolderDescriptor descriptor)
     {
         string cacheKey = GenerateCacheKey(descriptor);
 
         return _handlerCache.GetOrAdd(cacheKey, _ => CreateNewHandler(descriptor));
     }
 
-    private string GenerateCacheKey(object descriptor)
+    private static string GenerateCacheKey(FolderDescriptor descriptor)
     {
         return descriptor switch
         {
@@ -28,17 +28,14 @@ public class FileSystemHandlerFactory
         };
     }
 
-    private IFileSystemHandler CreateNewHandler(object descriptor)
+    private IFileSystemHandler CreateNewHandler(FolderDescriptor descriptor)
     {
         return descriptor switch
         {
-            SftpFolderDescriptor sftp => _serviceProvider.GetRequiredService<SftpFileSystemHandler>(),
-            SmbFolderDescriptor smb => _serviceProvider.GetRequiredService<SmbFileSystemHandler>(),
-            LocalFolderDescriptor local => _serviceProvider.GetRequiredService<LocalFileSystemHandler>(),
+            SftpFolderDescriptor => _serviceProvider.GetRequiredService<SftpFileSystemHandler>(),
+            SmbFolderDescriptor => _serviceProvider.GetRequiredService<SmbFileSystemHandler>(),
+            LocalFolderDescriptor => _serviceProvider.GetRequiredService<LocalFileSystemHandler>(),
             _ => throw new ArgumentException($"Unsupported descriptor type: {descriptor.GetType()}")
         };
     }
 }
-
-
-

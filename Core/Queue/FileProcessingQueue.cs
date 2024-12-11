@@ -1,6 +1,4 @@
-﻿using FileMonitor.Core.Models;
-
-namespace FileMonitor.Core.Queue;
+﻿namespace FileMonitor.Core.Queue;
 
 public class FileProcessingQueue
 {

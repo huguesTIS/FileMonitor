@@ -1,36 +1,38 @@
 ﻿namespace FileMonitor.Infrastructure.Factory;
 
-public class MonitorFactory
+public class MonitorFactory(IServiceProvider serviceProvider, IJobManager jobManager)
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IJobManager _jobManager = jobManager;
 
-    public MonitorFactory(IServiceProvider serviceProvider)
+    public IMonitor CreateMonitor(Guid jobId)
     {
-        _serviceProvider = serviceProvider;
-    }
+        if (!_jobManager.TryGetJob(jobId, out var job))
+        {
+            throw new ArgumentException($"No job found with ID {jobId}");
+        }
 
-    public IMonitor CreateMonitor(FolderDescriptor descriptor)
-    {
-        return descriptor switch
+        return job.SourceDescriptor switch
         {
             LocalFolderDescriptor local => new LocalFileMonitor(
-                local,
+                job,
                 _serviceProvider.GetRequiredService<IEventQueue>(),
                 _serviceProvider.GetRequiredService<ILogger<LocalFileMonitor>>()
             ),
-            SmbFolderDescriptor smb => new SmbFileMonitor(
-                smb,
-                _serviceProvider.GetRequiredService<IEventQueue>(),
-                _serviceProvider.GetRequiredService<IFileSystemHandlerFactory>(),
-                _serviceProvider.GetRequiredService<ILogger<SmbFileMonitor>>()
-            ),
-            SftpFolderDescriptor sftp => new SftpFileMonitor(
-                sftp,
-                _serviceProvider.GetRequiredService<IEventQueue>(),
-                _serviceProvider.GetRequiredService<IFileSystemHandlerFactory>(),
-                _serviceProvider.GetRequiredService<ILogger<SftpFileMonitor>>()
-            ),
-            _ => throw new NotSupportedException($"Unsupported folder descriptor type: {descriptor.GetType()}")
+            //SmbFolderDescriptor smb => new SmbFileMonitor(
+            //    job,
+            //    _serviceProvider.GetRequiredService<IEventQueue>(),
+            //    _serviceProvider.GetRequiredService<IFileSystemHandlerFactory>(),
+            //    _serviceProvider.GetRequiredService<ILogger<SmbFileMonitor>>()
+            //),
+            //SftpFolderDescriptor sftp => new SftpFileMonitor(
+            //    job,
+            //    _serviceProvider.GetRequiredService<IEventQueue>(),
+            //    _serviceProvider.GetRequiredService<IFileSystemHandlerFactory>(),
+            //    _serviceProvider.GetRequiredService<ILogger<SftpFileMonitor>>()
+            //),
+            _ => throw new NotSupportedException($"Unsupported folder descriptor type: {job.SourceDescriptor.GetType()}")
         };
     }
 }
+

@@ -2,6 +2,7 @@
 global using FileMonitor.Core.Interfaces;
 global using FileMonitor.Core.Handlers;
 global using FileMonitor.Core.Queue;
+global using FileMonitor.Core.Monitors;
 global using FileMonitor.Infrastructure.Factory;
 global using FileMonitor.Infrastructure.Security;
 global using System.Runtime.CompilerServices;

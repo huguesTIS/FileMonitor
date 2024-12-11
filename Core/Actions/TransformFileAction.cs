@@ -6,10 +6,7 @@ public class TransformFileAction : IFileAction
 
     public async Task ExecuteAsync(FileRecord fileRecord, Stream? fileStream, CancellationToken cancellationToken)
     {
-        if (fileStream == null)
-        {
-            throw new ArgumentNullException(nameof(fileStream));
-        }
+        ArgumentNullException.ThrowIfNull(fileStream);
 
         using var transformedStream = new MemoryStream();
         using var reader = new StreamReader(fileStream);
@@ -17,7 +14,7 @@ public class TransformFileAction : IFileAction
 
         while (!reader.EndOfStream)
         {
-            var line = await reader.ReadLineAsync();
+            var line = await reader.ReadLineAsync(cancellationToken);
             if (line != null)
             {
                 await writer.WriteLineAsync(line.ToUpperInvariant()); // Exemple de transformation

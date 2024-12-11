@@ -2,7 +2,7 @@
 
 public class FileActionPipeline
 {
-    private readonly List<IFileAction> _actions = new();
+    private readonly List<IFileAction> _actions = [];
 
     public void AddAction(IFileAction action)
     {

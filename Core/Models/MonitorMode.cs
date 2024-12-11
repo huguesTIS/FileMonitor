@@ -1,10 +1,9 @@
-﻿namespace FileMonitor.Core.Models
+﻿namespace FileMonitor.Core.Models;
+
+public enum MonitorMode
 {
-    public enum MonitorMode
-    {
-        Move,      // Déplacer les fichiers
-        Copy,      // Copier les fichiers
-        Sync,      // Synchroniser les dossiers (supprime aussi dans la destination
-        Archive    // Archiver une copie
-    }
+    Move,      // Déplacer les fichiers
+    Copy,      // Copier les fichiers
+    Sync,      // Synchroniser les dossiers (supprime aussi dans la destination
+    Archive    // Archiver une copie
 }
